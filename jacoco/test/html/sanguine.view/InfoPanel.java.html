@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InfoPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine.view</a> &gt; <span class="el_source">InfoPanel.java</span></div><h1>InfoPanel.java</h1><pre class="source lang-java linenums">package sanguine.view;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import javax.swing.JPanel;
+import sanguine.model.Player;
+import sanguine.model.ReadOnlySanguineModel;
+
+
+/**
+ * Shows current player and scores at the top.
+ */
+public class InfoPanel extends JPanel {
+
+  private final ReadOnlySanguineModel model;
+
+  /**
+   * Constructor for InfoPanel.
+   *
+   * @param model read only model
+   */
+<span class="nc" id="L26">  public InfoPanel(ReadOnlySanguineModel model) {</span>
+<span class="nc" id="L27">    this.model = model;</span>
+<span class="nc" id="L28">    this.setPreferredSize(new Dimension(800, 60));</span>
+<span class="nc" id="L29">    this.setBackground(Color.LIGHT_GRAY);</span>
+<span class="nc" id="L30">  }</span>
+
+  @Override
+  protected void paintComponent(Graphics g) {
+<span class="nc" id="L34">    super.paintComponent(g);</span>
+<span class="nc" id="L35">    Graphics2D g2d = (Graphics2D) g;</span>
+<span class="nc" id="L36">    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,</span>
+            RenderingHints.VALUE_ANTIALIAS_ON);
+
+<span class="nc" id="L39">    Player current = model.getCurrentPlayer();</span>
+<span class="nc" id="L40">    g2d.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 20));</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">    g2d.setColor(current == Player.RED ? Color.RED : Color.BLUE);</span>
+<span class="nc" id="L42">    g2d.drawString(&quot;Current Player: &quot; + current, 20, 35);</span>
+
+<span class="nc" id="L44">    g2d.setFont(new Font(&quot;Arial&quot;, Font.PLAIN, 16));</span>
+<span class="nc" id="L45">    g2d.setColor(Color.BLACK);</span>
+<span class="nc" id="L46">    int redScore = model.getScore(Player.RED);</span>
+<span class="nc" id="L47">    int blueScore = model.getScore(Player.BLUE);</span>
+<span class="nc" id="L48">    g2d.drawString(&quot;Scores - RED: &quot; + redScore + &quot; | BLUE: &quot; + blueScore, 300, 35);</span>
+
+<span class="nc" id="L50">    g2d.setFont(new Font(&quot;Arial&quot;, Font.ITALIC, 12));</span>
+<span class="nc" id="L51">    g2d.drawString(&quot;[ENTER: Confirm | P: Pass]&quot;, 700, 35);</span>
+<span class="nc" id="L52">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

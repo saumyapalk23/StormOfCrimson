@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cell.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine.model</a> &gt; <span class="el_source">Cell.java</span></div><h1>Cell.java</h1><pre class="source lang-java linenums">package sanguine.model;
+
+/**
+ * Represents a single cell on the Sanguine game board.
+ * A cell can be empty, contain pawns (1-3), or contain a card.
+ * If a cell has content, it is owned by a player (RED or BLUE).
+ */
+public class Cell {
+
+  private Player owner;        // null if empty
+  private Integer countPawns;  // null if no pawns, 1-3 if has pawns
+  private Card card;           // null if no card
+
+  //INVARIANT: At most one of countPawns or card is non-null
+  //INVARIANT: If countPawns is non-null, it is between 1 and 3 inclusive
+  //INVARIANT: If owner is null, both countPawns and card are null (empty cell)
+  //INVARIANT: If owner is non-null, exactly one of countPawns or card is non-null
+
+  /**
+   * Constructs an empty cell with no owner, pawns, or card.
+   */
+<span class="fc" id="L22">  public Cell() {</span>
+<span class="fc" id="L23">    this.owner = null;</span>
+<span class="fc" id="L24">    this.countPawns = null;</span>
+<span class="fc" id="L25">    this.card = null;</span>
+<span class="fc" id="L26">  }</span>
+
+  /**
+   * Checks if this cell is empty (contains neither pawns nor a card).
+   *
+   * @return true if the cell is empty, false otherwise
+   */
+  public boolean isEmpty() {
+<span class="fc bfc" id="L34" title="All 2 branches covered.">    return this.owner == null;</span>
+  }
+
+  /**
+   * Checks if this cell contains pawns.
+   *
+   * @return true if the cell has pawns, false otherwise
+   */
+  public boolean hasPawns() {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    return this.countPawns != null;</span>
+  }
+
+  /**
+   * Checks if this cell contains a card.
+   *
+   * @return true if the cell has a card, false otherwise
+   */
+  public boolean hasCard() {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">    return this.card != null;</span>
+  }
+
+  /**
+   * Gets the number of pawns in this cell.
+   *
+   * @return the pawn count (1-3) if cell has pawns, 0 if no pawns
+   */
+  public int getPawnCount() {
+<span class="fc bfc" id="L61" title="All 2 branches covered.">    return this.countPawns == null ? 0 : this.countPawns;</span>
+  }
+
+  /**
+   * Gets the card in this cell.
+   *
+   * @return the card if present, null if no card
+   */
+  public Card getCard() {
+<span class="fc" id="L70">    return this.card;</span>
+  }
+
+  /**
+   * Gets the owner of this cell's content.
+   *
+   * @return the player who owns this cell's content (RED or BLUE), or null if the cell is empty
+   */
+  public Player getOwner() {
+<span class="fc" id="L79">    return this.owner;</span>
+  }
+
+  /**
+   * Sets this cell to contain pawns owned by the specified player.
+   *
+   * @param owner the player who owns the pawns
+   * @param count the number of pawns (must be 1-3)
+   * @throws IllegalArgumentException if owner is null or count is not 1-3
+   */
+  public void setPawns(Player owner, int count) {
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">    if (owner == null) {</span>
+<span class="nc" id="L91">      throw new IllegalArgumentException(&quot;Owner cannot be null&quot;);</span>
+    }
+<span class="pc bpc" id="L93" title="2 of 4 branches missed.">    if (count &lt; 1 || count &gt; 3) {</span>
+<span class="nc" id="L94">      throw new IllegalArgumentException(&quot;Pawn count must be between 1 and 3&quot;);</span>
+    }
+<span class="fc" id="L96">    this.owner = owner;</span>
+<span class="fc" id="L97">    this.countPawns = count;</span>
+<span class="fc" id="L98">    this.card = null; // Clear any existing card</span>
+<span class="fc" id="L99">  }</span>
+
+  /**
+   * Sets this cell to contain a card owned by the specified player.
+   *
+   * @param owner the player who owns the card
+   * @param card  the card to place in this cell
+   * @throws IllegalArgumentException if owner or card is null
+   */
+  public void setCard(Player owner, Card card) {
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">    if (owner == null) {</span>
+<span class="nc" id="L110">      throw new IllegalArgumentException(&quot;Owner cannot be null&quot;);</span>
+    }
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">    if (card == null) {</span>
+<span class="nc" id="L113">      throw new IllegalArgumentException(&quot;Card cannot be null&quot;);</span>
+    }
+<span class="fc" id="L115">    this.owner = owner;</span>
+<span class="fc" id="L116">    this.card = card;</span>
+<span class="fc" id="L117">    this.countPawns = null; // Clear any existing pawns</span>
+<span class="fc" id="L118">  }</span>
+
+  /**
+   * Adds one pawn to this cell (up to a maximum of 3).
+   * The cell must already contain pawns.
+   *
+   * @throws IllegalStateException if cell doesn't have pawns or already has 3 pawns
+   */
+  public void addPawn() {
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">    if (!hasPawns()) {</span>
+<span class="nc" id="L128">      throw new IllegalStateException(&quot;Cannot add pawn to cell without pawns&quot;);</span>
+    }
+<span class="fc bfc" id="L130" title="All 2 branches covered.">    if (this.countPawns &gt;= 3) {</span>
+<span class="fc" id="L131">      throw new IllegalStateException(&quot;Cell already has maximum pawns (3)&quot;);</span>
+    }
+<span class="fc" id="L133">    this.countPawns++;</span>
+<span class="fc" id="L134">  }</span>
+
+  /**
+   * Changes the owner of the pawns in this cell without changing the count.
+   * The cell must currently contain pawns.
+   *
+   * @param newOwner the new owner of the pawns
+   * @throws IllegalStateException    if cell doesn't contain pawns
+   * @throws IllegalArgumentException if newOwner is null
+   */
+  public void changeOwner(Player newOwner) {
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">    if (!hasPawns()) {</span>
+<span class="nc" id="L146">      throw new IllegalStateException(&quot;Cannot change owner of cell without pawns&quot;);</span>
+    }
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">    if (newOwner == null) {</span>
+<span class="nc" id="L149">      throw new IllegalArgumentException(&quot;New owner cannot be null&quot;);</span>
+    }
+<span class="fc" id="L151">    this.owner = newOwner;</span>
+<span class="fc" id="L152">  }</span>
+
+  /**
+   * Clears this cell, making it empty with no owner, pawns, or card.
+   */
+  public void clearCell() {
+<span class="fc" id="L158">    this.owner = null;</span>
+<span class="fc" id="L159">    this.countPawns = null;</span>
+<span class="fc" id="L160">    this.card = null;</span>
+<span class="fc" id="L161">  }</span>
+
+  /**
+   * Returns a string representation of this cell's contents.
+   *
+   * @return a string describing what's in the cell
+   */
+  @Override
+  public String toString() {
+<span class="fc bfc" id="L170" title="All 2 branches covered.">    if (isEmpty()) {</span>
+<span class="fc" id="L171">      return &quot;Empty&quot;;</span>
+    }
+<span class="fc bfc" id="L173" title="All 2 branches covered.">    if (hasPawns()) {</span>
+<span class="fc" id="L174">      return owner + &quot; pawns: &quot; + countPawns;</span>
+    }
+<span class="fc" id="L176">    return owner + &quot; card: &quot; + card.getName();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

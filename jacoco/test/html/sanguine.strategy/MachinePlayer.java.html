@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MachinePlayer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine.strategy</a> &gt; <span class="el_source">MachinePlayer.java</span></div><h1>MachinePlayer.java</h1><pre class="source lang-java linenums">package sanguine.strategy;
+
+import java.util.ArrayList;
+import java.util.List;
+import sanguine.controller.Features;
+import sanguine.model.Player;
+import sanguine.model.ReadOnlySanguineModel;
+
+/**
+ * Represents a machine (AI) player that uses a strategy to choose moves.
+ * When notified of their turn, computes a move and emits it via Features.
+ */
+public class MachinePlayer implements PlayerType {
+  private final Player player;
+  private final Strategy strategy;
+  private final ReadOnlySanguineModel model;
+  private final List&lt;Features&gt; listeners;
+
+  /**
+   * Constructs a machine player.
+   *
+   * @param player   which player this is (RED or BLUE)
+   * @param strategy the strategy to use for choosing moves
+   * @param model    the game model to analyze
+   */
+<span class="nc" id="L26">  public MachinePlayer(Player player, Strategy strategy, ReadOnlySanguineModel model) {</span>
+<span class="nc bnc" id="L27" title="All 6 branches missed.">    if (player == null || strategy == null || model == null) {</span>
+<span class="nc" id="L28">      throw new IllegalArgumentException(&quot;Arguments cannot be null&quot;);</span>
+    }
+<span class="nc" id="L30">    this.player = player;</span>
+<span class="nc" id="L31">    this.strategy = strategy;</span>
+<span class="nc" id="L32">    this.model = model;</span>
+<span class="nc" id="L33">    this.listeners = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L34">  }</span>
+
+  @Override
+  public void addFeaturesListener(Features features) {
+<span class="nc" id="L38">    this.listeners.add(features);</span>
+<span class="nc" id="L39">  }</span>
+
+  @Override
+  public void onTurnStart() {
+<span class="nc" id="L43">    int[] move = strategy.moveChoice(model, player);</span>
+
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    if (move == null) {</span>
+<span class="nc" id="L46">      notifyPass();</span>
+    } else {
+<span class="nc" id="L48">      int handIndex = move[0];</span>
+<span class="nc" id="L49">      int row = move[1];</span>
+<span class="nc" id="L50">      int col = move[2];</span>
+
+<span class="nc" id="L52">      notifyCardClick(handIndex);</span>
+<span class="nc" id="L53">      notifyCellClick(row, col);</span>
+<span class="nc" id="L54">      notifyConfirm();</span>
+    }
+<span class="nc" id="L56">  }</span>
+
+  /**
+   * Notifies all listeners of a card click.
+   */
+  private void notifyCardClick(int handIndex) {
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    for (Features listener : listeners) {</span>
+<span class="nc" id="L63">      listener.handleCardClick(handIndex, player);</span>
+<span class="nc" id="L64">    }</span>
+<span class="nc" id="L65">  }</span>
+
+  /**
+   * Notifies all listeners of a cell click.
+   */
+  private void notifyCellClick(int row, int col) {
+<span class="nc bnc" id="L71" title="All 2 branches missed.">    for (Features listener : listeners) {</span>
+<span class="nc" id="L72">      listener.handleCellClick(row, col);</span>
+<span class="nc" id="L73">    }</span>
+<span class="nc" id="L74">  }</span>
+
+  /**
+   * Notifies all listeners of move confirmation.
+   */
+  private void notifyConfirm() {
+<span class="nc bnc" id="L80" title="All 2 branches missed.">    for (Features listener : listeners) {</span>
+<span class="nc" id="L81">      listener.handleConfirm();</span>
+<span class="nc" id="L82">    }</span>
+<span class="nc" id="L83">  }</span>
+
+  /**
+   * Notifies all listeners of passing turn.
+   */
+  private void notifyPass() {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    for (Features listener : listeners) {</span>
+<span class="nc" id="L90">      listener.handlePass();</span>
+<span class="nc" id="L91">    }</span>
+<span class="nc" id="L92">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

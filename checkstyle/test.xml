@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="10.23.1">
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\test\java\sanguine\controller\SanguineControllerTest.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\test\java\sanguine\model\InternalTests.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\test\java\sanguine\ModelTests.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\test\java\sanguine\TextualTests.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\test\java\strategy\MockTranscriptModel.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\test\java\strategy\StrategyTests.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\test\java\strategy\TranscriptGenerator.java">
+<error line="38" column="3" severity="warning" message="&apos;METHOD_DEF&apos; should be separated from previous line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.EmptyLineSeparatorCheck"/>
+</file>
+</checkstyle>

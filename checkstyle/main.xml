@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="10.23.1">
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\controller\DeckConfiguration.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\controller\Features.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\controller\SanguineController.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\BasicSanguine.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\Board.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\BoardImpl.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\Card.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\Cell.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\Deck.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\ModelStatusListener.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\Player.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\PlayerHand.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\ReadOnlySanguineModel.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\model\SanguineModel.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\Sanguine.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\SanguineGame.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\strategy\FillFirstStrategy.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\strategy\HumanPlayer.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\strategy\MachinePlayer.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\strategy\MaximizeRowScoreStrategy.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\strategy\PlayerType.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\strategy\Strategy.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\view\BoardPanel.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\view\HandPanel.java">
+<error line="60" column="39" severity="warning" message="Empty catch block." source="com.puppycrawl.tools.checkstyle.checks.blocks.EmptyCatchBlockCheck"/>
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\view\InfoPanel.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\view\MainGui.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\view\SanguineTextualView.java">
+</file>
+<file name="C:\Users\Saumya\cs3100\f25-ex03-saumyapalk23\f25-hw07-groups-group-AksharaSaumya\src\main\java\sanguine\view\SanguineView.java">
+</file>
+</checkstyle>

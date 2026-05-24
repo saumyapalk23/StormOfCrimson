@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SanguineController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine.controller</a> &gt; <span class="el_source">SanguineController.java</span></div><h1>SanguineController.java</h1><pre class="source lang-java linenums">package sanguine.controller;
+
+import javax.swing.JOptionPane;
+import sanguine.model.ModelStatusListener;
+import sanguine.model.Player;
+import sanguine.model.SanguineModel;
+import sanguine.strategy.PlayerType;
+import sanguine.view.SanguineView;
+
+/**
+ * Controller for a single player in the Sanguine game.
+ * Coordinates between the model, view, and player implementation.
+ * Each player has their own controller instance.
+ */
+public class SanguineController implements Features, ModelStatusListener {
+  private final SanguineModel model;
+  private final Player thisPlayer;
+  private final PlayerType player;
+  private final SanguineView view;
+
+<span class="fc" id="L21">  private int selectedCardIndex = -1;</span>
+<span class="fc" id="L22">  private int selectedRow = -1;</span>
+<span class="fc" id="L23">  private int selectedCol = -1;</span>
+<span class="fc" id="L24">  private boolean isMyTurn = false;</span>
+
+  /**
+   * Constructs a controller for a single player.
+   *
+   * @param model      the game model
+   * @param thisPlayer which player this controller represents
+   * @param player     the player implementation (human or machine)
+   * @param view       the view for this player
+   */
+  public SanguineController(SanguineModel model, Player thisPlayer,
+<span class="fc" id="L35">                            PlayerType player, SanguineView view) {</span>
+<span class="pc bpc" id="L36" title="1 of 8 branches missed.">    if (model == null || thisPlayer == null || player == null || view == null) {</span>
+<span class="fc" id="L37">      throw new IllegalArgumentException(&quot;Arguments cannot be null&quot;);</span>
+    }
+
+<span class="fc" id="L40">    this.model = model;</span>
+<span class="fc" id="L41">    this.thisPlayer = thisPlayer;</span>
+<span class="fc" id="L42">    this.player = player;</span>
+<span class="fc" id="L43">    this.view = view;</span>
+
+    // Register as listener for view events (human clicks)
+<span class="fc" id="L46">    view.addFeaturesListener(this);</span>
+
+    // Register as listener for player events (machine emits moves here)
+<span class="fc" id="L49">    player.addFeaturesListener(this);</span>
+
+<span class="fc" id="L51">    model.addModelStatusListener(this);</span>
+<span class="fc" id="L52">  }</span>
+
+  @Override
+  public void handleCardClick(int handIndex, Player clickedPlayer) {
+    // Ignore if not our turn
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">    if (!isMyTurn) {</span>
+<span class="fc" id="L58">      return;</span>
+    }
+
+    // Ensure player can only select their own cards
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    if (clickedPlayer != thisPlayer) {</span>
+<span class="nc" id="L63">      return;</span>
+    }
+
+    // Store the selected card
+<span class="nc" id="L67">    selectedCardIndex = handIndex;</span>
+<span class="nc" id="L68">    System.out.println(thisPlayer + &quot; selected card at index &quot; + handIndex);</span>
+<span class="nc" id="L69">  }</span>
+
+  @Override
+  public void handleCellClick(int row, int col) {
+    // Ignore if not our turn
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">    if (!isMyTurn) {</span>
+<span class="fc" id="L75">      return;</span>
+    }
+
+    // Store the selected cell
+<span class="nc" id="L79">    selectedRow = row;</span>
+<span class="nc" id="L80">    selectedCol = col;</span>
+<span class="nc" id="L81">    System.out.println(thisPlayer + &quot; selected cell (&quot; + row + &quot;, &quot; + col + &quot;)&quot;);</span>
+<span class="nc" id="L82">  }</span>
+
+  @Override
+  public void handleConfirm() {
+<span class="fc" id="L86">    System.out.println(&quot;&gt;&gt;&gt; CONFIRM pressed by &quot; + thisPlayer + &quot; controller&quot;);</span>
+<span class="fc" id="L87">    System.out.println(&quot;    isMyTurn = &quot; + isMyTurn);</span>
+<span class="fc" id="L88">    System.out.println(&quot;    selectedCard = &quot; + selectedCardIndex);</span>
+<span class="fc" id="L89">    System.out.println(&quot;    selectedCell = (&quot; + selectedRow + &quot;, &quot; + selectedCol + &quot;)&quot;);</span>
+
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">    if (!isMyTurn) {</span>
+<span class="fc" id="L92">      System.out.println(&quot;    BLOCKED: Not my turn!&quot;);</span>
+<span class="fc" id="L93">      return;</span>
+    }
+
+    // Ensure both card and cell are selected
+<span class="nc bnc" id="L97" title="All 6 branches missed.">    if (selectedCardIndex == -1 || selectedRow == -1 || selectedCol == -1) {</span>
+<span class="nc" id="L98">      showError(&quot;Please select both a card and a cell before confirming.&quot;);</span>
+<span class="nc" id="L99">      return;</span>
+    }
+
+    try {
+<span class="nc" id="L103">      System.out.println(&quot;    Checking if move is legal...&quot;);</span>
+<span class="nc" id="L104">      boolean isLegal = model.moveCard(selectedCardIndex, selectedRow, selectedCol);</span>
+<span class="nc" id="L105">      System.out.println(&quot;    moveCard returned: &quot; + isLegal);</span>
+
+      // Check if move is legal
+<span class="nc bnc" id="L108" title="All 2 branches missed.">      if (!model.moveCard(selectedCardIndex, selectedRow, selectedCol)) {</span>
+<span class="nc" id="L109">        showError(&quot;That move is not legal. Please choose a valid card and cell.&quot;);</span>
+<span class="nc" id="L110">        clearSelections();</span>
+<span class="nc" id="L111">        return;</span>
+      }
+
+      // Execute the move (this also switches turns in the model)
+<span class="nc" id="L115">      System.out.println(&quot;    Executing placeCard...&quot;);</span>
+<span class="nc" id="L116">      model.placeCard(selectedCardIndex, selectedRow, selectedCol);</span>
+<span class="nc" id="L117">      System.out.println(thisPlayer + &quot; placed card at (&quot; + selectedRow + &quot;, &quot;</span>
+          + selectedCol + &quot;)&quot;);
+
+      // Clear selections
+<span class="nc" id="L121">      clearSelections();</span>
+
+      // No need to call view.refresh() here if views listen to model
+
+<span class="nc" id="L125">    } catch (IllegalStateException e) {</span>
+<span class="nc" id="L126">      showError(&quot;Invalid move: &quot; + e.getMessage());</span>
+<span class="nc" id="L127">      clearSelections();</span>
+<span class="nc" id="L128">    } catch (Exception e) {</span>
+<span class="nc" id="L129">      showError(&quot;Error making move: &quot; + e.getMessage());</span>
+<span class="nc" id="L130">      clearSelections();</span>
+<span class="nc" id="L131">    }</span>
+<span class="nc" id="L132">  }</span>
+
+  @Override
+  public void handlePass() {
+    // Ignore if not our turn
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">    if (!isMyTurn) {</span>
+<span class="fc" id="L138">      return;</span>
+    }
+
+    try {
+      // Clear any selections
+<span class="nc" id="L143">      clearSelections();</span>
+
+      // Pass turn (this switches turns in the model)
+<span class="nc" id="L146">      model.passTurn();</span>
+<span class="nc" id="L147">      System.out.println(thisPlayer + &quot; passed their turn&quot;);</span>
+
+<span class="nc" id="L149">    } catch (Exception e) {</span>
+<span class="nc" id="L150">      showError(&quot;Error passing turn: &quot; + e.getMessage());</span>
+<span class="nc" id="L151">    }</span>
+<span class="nc" id="L152">  }</span>
+
+  @Override
+  public void onPlayerTurn(Player player) {
+<span class="nc bnc" id="L156" title="All 2 branches missed.">    isMyTurn = (player == thisPlayer);</span>
+
+<span class="nc" id="L158">    System.out.println(&quot;==================================================&quot;);</span>
+<span class="nc" id="L159">    System.out.println(&quot;TURN NOTIFICATION: &quot; + thisPlayer + &quot; controller&quot;);</span>
+<span class="nc" id="L160">    System.out.println(&quot;  Current player is: &quot; + player);</span>
+<span class="nc" id="L161">    System.out.println(&quot;  This controller is for: &quot; + thisPlayer);</span>
+<span class="nc" id="L162">    System.out.println(&quot;  isMyTurn = &quot; + isMyTurn);</span>
+<span class="nc" id="L163">    System.out.println(&quot;==================================================&quot;);</span>
+
+<span class="nc bnc" id="L165" title="All 2 branches missed.">    if (isMyTurn) {</span>
+<span class="nc" id="L166">      clearSelections();</span>
+<span class="nc" id="L167">      view.refresh();</span>
+<span class="nc" id="L168">      this.player.onTurnStart();</span>
+    } else {
+<span class="nc" id="L170">      view.refresh();</span>
+    }
+<span class="nc" id="L172">  }</span>
+
+  @Override
+  public void onGameOver(Player winner) {
+    // Refresh view one final time
+<span class="nc" id="L177">    view.refresh();</span>
+
+    // Display game over message
+    String message;
+<span class="nc bnc" id="L181" title="All 2 branches missed.">    if (winner == null) {</span>
+<span class="nc" id="L182">      message = &quot;Game Over!\n\nIt's a TIE!\n\n&quot;</span>
+<span class="nc" id="L183">          + &quot;RED Score: &quot; + model.getScore(Player.RED) + &quot;\n&quot;</span>
+<span class="nc" id="L184">          + &quot;BLUE Score: &quot; + model.getScore(Player.BLUE);</span>
+    } else {
+<span class="nc" id="L186">      message = &quot;Game Over!\n\nWinner: &quot; + winner + &quot;!\n\n&quot;</span>
+<span class="nc" id="L187">          + &quot;RED Score: &quot; + model.getScore(Player.RED) + &quot;\n&quot;</span>
+<span class="nc" id="L188">          + &quot;BLUE Score: &quot; + model.getScore(Player.BLUE);</span>
+    }
+
+<span class="nc" id="L191">    JOptionPane.showMessageDialog(null, message, &quot;Game Over&quot;,</span>
+        JOptionPane.INFORMATION_MESSAGE);
+<span class="nc" id="L193">  }</span>
+
+  /**
+   * Clears all current selections.
+   */
+  private void clearSelections() {
+<span class="nc" id="L199">    selectedCardIndex = -1;</span>
+<span class="nc" id="L200">    selectedRow = -1;</span>
+<span class="nc" id="L201">    selectedCol = -1;</span>
+<span class="nc" id="L202">  }</span>
+
+  /**
+   * Displays an error message to the user.
+   *
+   * @param message the error message to display
+   */
+  private void showError(String message) {
+<span class="nc" id="L210">    JOptionPane.showMessageDialog(null, message, &quot;Invalid Move&quot;,</span>
+        JOptionPane.ERROR_MESSAGE);
+<span class="nc" id="L212">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

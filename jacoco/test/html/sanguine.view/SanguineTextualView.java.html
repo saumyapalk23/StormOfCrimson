@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SanguineTextualView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine.view</a> &gt; <span class="el_source">SanguineTextualView.java</span></div><h1>SanguineTextualView.java</h1><pre class="source lang-java linenums">package sanguine.view;
+
+import sanguine.model.Board;
+import sanguine.model.Card;
+import sanguine.model.Cell;
+import sanguine.model.Player;
+import sanguine.model.SanguineModel;
+
+/**
+ * Provides a textual rendering of the Sanguine game board and scores.
+ * Follows the format specified in the project requirements.
+ * Generates the correct format for each card object.
+ */
+public class SanguineTextualView {
+
+  private final SanguineModel model;
+
+  /**
+   * Constructs a SanguineTextualView with the model to be rendered.
+   *
+   * @param model the game model
+   * @throws IllegalArgumentException if the model is null
+   */
+<span class="fc" id="L24">  public SanguineTextualView(SanguineModel model) {</span>
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">    if (model == null) {</span>
+<span class="nc" id="L26">      throw new IllegalArgumentException(&quot;Model cannot be null.&quot;);</span>
+    }
+<span class="fc" id="L28">    this.model = model;</span>
+<span class="fc" id="L29">  }</span>
+
+  /**
+   * Generates the textual representation of the current game state.
+   *
+   * @return a String representing the current board, scores, and turn info.
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L38">    Board board = model.getBoard();</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">    if (board == null) {</span>
+<span class="nc" id="L40">      return &quot;Game not started. Call startGame() first.&quot;;</span>
+    }
+
+<span class="fc" id="L43">    StringBuilder output = new StringBuilder();</span>
+
+    // append turn info
+<span class="fc" id="L46">    Player currentPlayer = model.getCurrentPlayer();</span>
+<span class="fc" id="L47">    output.append(&quot;Current Player: &quot;).append(currentPlayer).append(&quot; (&quot;);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">    output.append(currentPlayer == Player.RED ? &quot;Red&quot; : &quot;Blue&quot;).append(&quot;)\n&quot;);</span>
+
+    // append hand sizes and deck sizes
+<span class="fc" id="L51">    output.append(&quot;RED Hand Size: &quot;).append(model.getHand(Player.RED).size());</span>
+<span class="fc" id="L52">    output.append(&quot;, Deck: &quot;).append(model.getDeckSize(Player.RED)).append(&quot; | &quot;);</span>
+<span class="fc" id="L53">    output.append(&quot;BLUE Hand Size: &quot;).append(model.getHand(Player.BLUE).size());</span>
+<span class="fc" id="L54">    output.append(&quot;, Deck: &quot;).append(model.getDeckSize(Player.BLUE)).append(&quot;\n&quot;);</span>
+
+    // append the board/scoring view
+<span class="fc" id="L57">    output.append(renderBoard(board));</span>
+
+    // append game over/winner info (if applicable)
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (model.isGameOver()) {</span>
+<span class="fc" id="L61">      Player winner = model.getWinner();</span>
+<span class="fc" id="L62">      output.append(&quot;\nGame Over! Result: &quot;);</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">      if (winner == null) {</span>
+<span class="fc" id="L64">        output.append(&quot;TIE&quot;);</span>
+      } else {
+<span class="nc" id="L66">        output.append(&quot;Winner: &quot;).append(winner);</span>
+      }
+<span class="fc" id="L68">      output.append(&quot;\nRED Total Score: &quot;).append(model.getScore(Player.RED));</span>
+<span class="fc" id="L69">      output.append(&quot;\nBLUE Total Score: &quot;).append(model.getScore(Player.BLUE));</span>
+    }
+
+<span class="fc" id="L72">    return output.toString();</span>
+  }
+
+  /**
+   * Helper method to generate the required board and row-score textual output.
+   */
+  private String renderBoard(Board board) {
+<span class="fc" id="L79">    int rows = board.getRows();</span>
+<span class="fc" id="L80">    int cols = board.getCols();</span>
+<span class="fc" id="L81">    StringBuilder boardStringing = new StringBuilder();</span>
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">    for (int r = 0; r &lt; rows; r++) {</span>
+      // calculate row scores using the Board method and Card method (getValue)
+<span class="fc" id="L85">      int redRowScore = board.getCardsInRow(r, Player.RED).stream()</span>
+<span class="fc" id="L86">          .mapToInt(Card::getValue)</span>
+<span class="fc" id="L87">          .sum();</span>
+<span class="fc" id="L88">      int blueRowScore = board.getCardsInRow(r, Player.BLUE).stream()</span>
+<span class="fc" id="L89">          .mapToInt(Card::getValue)</span>
+<span class="fc" id="L90">          .sum();</span>
+
+      // print the Red row Score (left side)
+<span class="fc" id="L93">      boardStringing.append(redRowScore).append(&quot; &quot;);</span>
+
+      // print the cells
+<span class="fc bfc" id="L96" title="All 2 branches covered.">      for (int c = 0; c &lt; cols; c++) {</span>
+<span class="fc" id="L97">        Cell cell = board.getCell(r, c);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (cell.hasCard()) {</span>
+          // Card: 'R' or 'B'
+<span class="fc bfc" id="L100" title="All 2 branches covered.">          boardStringing.append(cell.getOwner() == Player.RED ? &quot;R&quot; : &quot;B&quot;);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        } else if (cell.hasPawns()) {</span>
+          // Pawns: 1, 2, or 3
+<span class="fc" id="L103">          boardStringing.append(cell.getPawnCount());</span>
+        } else {
+          // Empty
+<span class="fc" id="L106">          boardStringing.append(&quot;_&quot;);</span>
+        }
+      }
+
+      // Print the Blue row score (right side)
+<span class="fc" id="L111">      boardStringing.append(&quot; &quot;).append(blueRowScore).append(&quot;\n&quot;);</span>
+    }
+<span class="fc" id="L113">    return boardStringing.toString();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

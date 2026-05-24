@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BoardPanel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine.view</a> &gt; <span class="el_source">BoardPanel.java</span></div><h1>BoardPanel.java</h1><pre class="source lang-java linenums">package sanguine.view;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JPanel;
+import sanguine.controller.Features;
+import sanguine.model.Card;
+import sanguine.model.Cell;
+import sanguine.model.Player;
+import sanguine.model.ReadOnlySanguineModel;
+
+
+/**
+ * Displays the game board with cells.
+ * Publishes cell click events to subscribed Features listeners.
+ */
+public class BoardPanel extends JPanel {
+
+  private final ReadOnlySanguineModel model;
+  private final List&lt;Features&gt; featuresListeners;  // List of subscribers
+<span class="nc" id="L29">  private int selectedRow = -1;</span>
+<span class="nc" id="L30">  private int selectedCol = -1;</span>
+
+  private static final int CELL_SIZE = 70;
+
+  /**
+   * Board panel constructor.
+   *
+   * @param model read only model
+   */
+<span class="nc" id="L39">  public BoardPanel(ReadOnlySanguineModel model) {</span>
+<span class="nc" id="L40">    this.model = model;</span>
+<span class="nc" id="L41">    this.featuresListeners = new ArrayList&lt;&gt;();  // Initialize subscriber list</span>
+<span class="nc" id="L42">    this.setBackground(Color.WHITE);</span>
+
+<span class="nc" id="L44">    this.addMouseListener(new MouseAdapter() {</span>
+      @Override
+      public void mouseClicked(MouseEvent e) {
+<span class="nc" id="L47">        handleMouseClick(e.getX(), e.getY());</span>
+<span class="nc" id="L48">      }</span>
+    });
+<span class="nc" id="L50">  }</span>
+
+  @Override
+  public Dimension getPreferredSize() {
+<span class="nc" id="L54">    int rows = model.getRows();</span>
+<span class="nc" id="L55">    int cols = model.getCols();</span>
+<span class="nc" id="L56">    int width = (cols * CELL_SIZE) + 160;</span>
+<span class="nc" id="L57">    int height = (rows * CELL_SIZE) + 40;</span>
+<span class="nc" id="L58">    return new Dimension(width, height);</span>
+  }
+
+  @Override
+  protected void paintComponent(Graphics g) {
+<span class="nc" id="L63">    super.paintComponent(g);</span>
+<span class="nc" id="L64">    Graphics2D g2d = (Graphics2D) g;</span>
+<span class="nc" id="L65">    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,</span>
+            RenderingHints.VALUE_ANTIALIAS_ON);
+
+<span class="nc" id="L68">    int rows = model.getRows();</span>
+<span class="nc" id="L69">    int cols = model.getCols();</span>
+<span class="nc" id="L70">    int startX = 80;</span>
+<span class="nc" id="L71">    int startY = 20;</span>
+
+<span class="nc bnc" id="L73" title="All 2 branches missed.">    for (int row = 0; row &lt; rows; row++) {</span>
+<span class="nc" id="L74">      int y = startY + (row * CELL_SIZE);</span>
+
+      // Red row score (left)
+<span class="nc" id="L77">      g2d.setColor(Color.BLACK);</span>
+<span class="nc" id="L78">      g2d.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 18));</span>
+<span class="nc" id="L79">      g2d.drawString(String.valueOf(model.getRowScore(row, Player.RED)),</span>
+              30, y + CELL_SIZE / 2 + 5);
+
+<span class="nc bnc" id="L82" title="All 2 branches missed.">      for (int col = 0; col &lt; cols; col++) {</span>
+<span class="nc" id="L83">        int x = startX + (col * CELL_SIZE);</span>
+<span class="nc" id="L84">        drawCell(g2d, row, col, x, y);</span>
+      }
+
+      // Blue row score (right)
+<span class="nc" id="L88">      int rightX = startX + (cols * CELL_SIZE) + 10;</span>
+<span class="nc" id="L89">      g2d.drawString(String.valueOf(model.getRowScore(row, Player.BLUE)),</span>
+              rightX, y + CELL_SIZE / 2 + 5);
+    }
+<span class="nc" id="L92">  }</span>
+
+  private void drawCell(Graphics2D g2d, int row, int col, int x, int y) {
+<span class="nc" id="L95">    final Cell cell = model.getCell(row, col);</span>
+
+    // highlight
+<span class="nc bnc" id="L98" title="All 4 branches missed.">    if (row == selectedRow &amp;&amp; col == selectedCol) {</span>
+<span class="nc" id="L99">      g2d.setColor(Color.CYAN);</span>
+<span class="nc" id="L100">      g2d.fillRect(x, y, CELL_SIZE, CELL_SIZE);</span>
+    }
+
+    // border
+<span class="nc" id="L104">    g2d.setColor(Color.BLACK);</span>
+<span class="nc" id="L105">    g2d.drawRect(x, y, CELL_SIZE, CELL_SIZE);</span>
+
+    // contents
+<span class="nc bnc" id="L108" title="All 2 branches missed.">    if (cell.hasCard()) {</span>
+<span class="nc" id="L109">      drawCardOnBoard(g2d, cell, x, y);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">    } else if (cell.hasPawns()) {</span>
+<span class="nc" id="L111">      drawPawns(g2d, cell, x, y);</span>
+    } else {
+<span class="nc" id="L113">      g2d.setColor(Color.LIGHT_GRAY);</span>
+<span class="nc" id="L114">      g2d.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);</span>
+    }
+<span class="nc" id="L116">  }</span>
+
+  private void drawCardOnBoard(Graphics2D g2d, Cell cell, int x, int y) {
+<span class="nc" id="L119">    Player owner = cell.getOwner();</span>
+<span class="nc" id="L120">    Card card = cell.getCard();</span>
+
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    g2d.setColor(owner == Player.RED</span>
+            ?
+<span class="nc" id="L124">            new Color(255, 200, 200) : new Color(200, 200, 255));</span>
+<span class="nc" id="L125">    g2d.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);</span>
+
+<span class="nc" id="L127">    g2d.setColor(Color.BLACK);</span>
+<span class="nc" id="L128">    g2d.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 20));</span>
+<span class="nc" id="L129">    String valueStr = String.valueOf(card.getValue());</span>
+<span class="nc" id="L130">    int strWidth = g2d.getFontMetrics().stringWidth(valueStr);</span>
+<span class="nc" id="L131">    g2d.drawString(valueStr, x + (CELL_SIZE - strWidth) / 2, y + CELL_SIZE / 2 + 7);</span>
+<span class="nc" id="L132">  }</span>
+
+  private void drawPawns(Graphics2D g2d, Cell cell, int x, int y) {
+<span class="nc" id="L135">    Player owner = cell.getOwner();</span>
+<span class="nc" id="L136">    int count = cell.getPawnCount();</span>
+
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    g2d.setColor(owner == Player.RED</span>
+            ?
+<span class="nc" id="L140">            new Color(255, 230, 230) : new Color(230, 230, 255));</span>
+<span class="nc" id="L141">    g2d.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);</span>
+
+<span class="nc bnc" id="L143" title="All 2 branches missed.">    g2d.setColor(owner == Player.RED ? Color.RED : Color.BLUE);</span>
+<span class="nc" id="L144">    g2d.setFont(new Font(&quot;Arial&quot;, Font.BOLD, 30));</span>
+<span class="nc" id="L145">    String countStr = String.valueOf(count);</span>
+<span class="nc" id="L146">    int strWidth = g2d.getFontMetrics().stringWidth(countStr);</span>
+<span class="nc" id="L147">    g2d.drawString(countStr, x + (CELL_SIZE - strWidth) / 2, y + CELL_SIZE / 2 + 10);</span>
+<span class="nc" id="L148">  }</span>
+
+  /**
+   * Handles mouse clicks and notifies all subscribers.
+   */
+  private void handleMouseClick(int mouseX, int mouseY) {
+<span class="nc" id="L154">    int startX = 80;</span>
+<span class="nc" id="L155">    int startY = 20;</span>
+<span class="nc" id="L156">    int col = (mouseX - startX) / CELL_SIZE;</span>
+<span class="nc" id="L157">    int row = (mouseY - startY) / CELL_SIZE;</span>
+
+    // Check bounds
+<span class="nc bnc" id="L160" title="All 8 branches missed.">    if (row &gt;= 0 &amp;&amp; row &lt; model.getRows() &amp;&amp; col &gt;= 0 &amp;&amp; col &lt; model.getCols()) {</span>
+      // Toggle selection
+<span class="nc bnc" id="L162" title="All 4 branches missed.">      if (row == selectedRow &amp;&amp; col == selectedCol) {</span>
+<span class="nc" id="L163">        selectedRow = -1;</span>
+<span class="nc" id="L164">        selectedCol = -1;</span>
+      } else {
+<span class="nc" id="L166">        selectedRow = row;</span>
+<span class="nc" id="L167">        selectedCol = col;</span>
+      }
+
+      // Notify all subscribers (pub-sub pattern)
+<span class="nc" id="L171">      notifyCellClick(row, col);</span>
+<span class="nc" id="L172">      repaint();</span>
+    }
+<span class="nc" id="L174">  }</span>
+
+  /**
+   * Notifies all subscribed Features listeners about a cell click.
+   */
+  private void notifyCellClick(int row, int col) {
+<span class="nc bnc" id="L180" title="All 2 branches missed.">    for (Features listener : featuresListeners) {</span>
+<span class="nc" id="L181">      listener.handleCellClick(row, col);</span>
+<span class="nc" id="L182">    }</span>
+<span class="nc" id="L183">  }</span>
+
+  /**
+   * Adds a Features listener (subscriber).
+   */
+  public void addFeaturesListener(Features features) {
+<span class="nc" id="L189">    this.featuresListeners.add(features);</span>
+<span class="nc" id="L190">  }</span>
+
+  /**
+   * Removes a Features listener (unsubscribe).
+   */
+  public void removeFeaturesListener(Features features) {
+<span class="nc" id="L196">    this.featuresListeners.remove(features);</span>
+<span class="nc" id="L197">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

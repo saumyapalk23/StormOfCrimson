@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BoardImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine.model</a> &gt; <span class="el_source">BoardImpl.java</span></div><h1>BoardImpl.java</h1><pre class="source lang-java linenums">package sanguine.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Implementation of the Board interface.
+ * Represents a rectangular grid of cells with game state.
+ */
+public class BoardImpl implements Board {
+
+  private final Cell[][] cells;
+  private final int rows;
+  private final int cols;
+
+
+  //INVARIANT: cells.length == rows &amp;&amp; cells[0].length == cols
+  //INVARIANT: cols &gt; 1 &amp;&amp; cols % 2 == 1 (columns must be odd and &gt; 1)
+  //INVARIANT: rows &gt; 0
+  //INVARIANT: All cells in first column owned by RED, last column owned by BLUE (at start)
+
+  /**
+   * Constructs a board with the specified dimensions.
+   * Initializes the board with starting pawns in the first and last columns.
+   *
+   * @param rows the number of rows (must be &gt; 0)
+   * @param cols the number of columns (must be &gt; 1 and odd)
+   * @throws IllegalArgumentException if dimensions are invalid
+   */
+<span class="fc" id="L30">  public BoardImpl(int rows, int cols) {</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">    if (rows &lt;= 0) {</span>
+<span class="fc" id="L32">      throw new IllegalArgumentException(&quot;Rows must be greater than 0&quot;);</span>
+    }
+<span class="fc bfc" id="L34" title="All 4 branches covered.">    if (cols &lt;= 1 || cols % 2 == 0) {</span>
+<span class="fc" id="L35">      throw new IllegalArgumentException(&quot;Columns must be greater than 1 and odd&quot;);</span>
+    }
+
+
+<span class="fc" id="L39">    this.cells = new Cell[rows][cols];</span>
+<span class="fc" id="L40">    this.rows = rows;</span>
+<span class="fc" id="L41">    this.cols = cols;</span>
+<span class="fc" id="L42">    this.initializeCells();</span>
+<span class="fc" id="L43">  }</span>
+
+  /**
+   * Initializes all cells on the board.
+   * Sets up starting pawns in first column (RED) and last column (BLUE).
+   */
+  private void initializeCells() {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">    for (int row = 0; row &lt; rows; row++) {</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">      for (int col = 0; col &lt; cols; col++) {</span>
+<span class="fc" id="L52">        cells[row][col] = new Cell();</span>
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (col == 0) {</span>
+<span class="fc" id="L55">          cells[row][col].setPawns(Player.RED, 1);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        } else if (col == cols - 1) {</span>
+<span class="fc" id="L57">          cells[row][col].setPawns(Player.BLUE, 1);</span>
+        }
+      }
+    }
+<span class="fc" id="L61">  }</span>
+
+  @Override
+  public int getRows() {
+<span class="fc" id="L65">    return this.rows;</span>
+  }
+
+  @Override
+  public int getCols() {
+<span class="fc" id="L70">    return this.cols;</span>
+  }
+
+  @Override
+  public Cell getCell(int row, int col) {
+<span class="fc" id="L75">    validatePosition(row, col);</span>
+<span class="fc" id="L76">    return this.cells[row][col];</span>
+  }
+
+  /**
+   * Validates that a position is within the board bounds.
+   *
+   * @param row the row to check
+   * @param col the column to check
+   * @throws IllegalArgumentException if position is out of bounds
+   */
+  private void validatePosition(int row, int col) {
+<span class="pc bpc" id="L87" title="2 of 8 branches missed.">    if (row &lt; 0 || row &gt;= rows || col &lt; 0 || col &gt;= cols) {</span>
+<span class="fc" id="L88">      throw new IllegalArgumentException(</span>
+<span class="fc" id="L89">          String.format(&quot;Position (%d, %d) is out of bounds&quot;, row, col));</span>
+    }
+<span class="fc" id="L91">  }</span>
+
+  @Override
+  public List&lt;Card&gt; getCardsInRow(int row, Player player) {
+<span class="pc bpc" id="L95" title="2 of 4 branches missed.">    if (row &lt; 0 || row &gt;= rows) {</span>
+<span class="nc" id="L96">      throw new IllegalArgumentException(&quot;Row out of bounds&quot;);</span>
+    }
+
+<span class="fc" id="L99">    List&lt;Card&gt; cards = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">    for (int col = 0; col &lt; cols; col++) {</span>
+<span class="fc" id="L101">      Cell cell = cells[row][col];</span>
+<span class="fc bfc" id="L102" title="All 4 branches covered.">      if (cell.hasCard() &amp;&amp; cell.getOwner() == player) {</span>
+<span class="fc" id="L103">        cards.add(cell.getCard());</span>
+      }
+    }
+<span class="fc" id="L106">    return cards;</span>
+  }
+
+  @Override
+  public void placeCard(Card card, Player owner, int row, int col) {
+<span class="fc" id="L111">    validatePosition(row, col);</span>
+
+<span class="fc" id="L113">    Cell cell = cells[row][col];</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">    if (cell.hasCard()) {</span>
+<span class="fc" id="L115">      throw new IllegalArgumentException(&quot;Cell already contains a card&quot;);</span>
+    }
+
+<span class="fc" id="L118">    cell.setCard(owner, card);</span>
+<span class="fc" id="L119">  }</span>
+
+  @Override
+  public void addPawn(Player owner, int row, int col) {
+<span class="fc" id="L123">    validatePosition(row, col);</span>
+
+<span class="fc" id="L125">    Cell cell = cells[row][col];</span>
+
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">    if (cell.hasCard()) {</span>
+<span class="nc" id="L128">      return;</span>
+    }
+<span class="fc bfc" id="L130" title="All 2 branches covered.">    if (cell.isEmpty()) {</span>
+<span class="fc" id="L131">      cell.setPawns(owner, 1);</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">    } else if (cell.hasPawns()) {</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">      if (cell.getOwner() == owner) {</span>
+        // Same owner, try to increment (max 3)
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">        if (cell.getPawnCount() &lt; 3) {</span>
+<span class="fc" id="L136">          cell.addPawn();</span>
+        }
+        // If already at 3, do nothing (max reached)
+      } else {
+        // setPawnOwner should be called instead
+<span class="nc" id="L141">        throw new IllegalStateException(</span>
+            &quot;Cannot add pawn - cell owned by different player. Use setPawnOwner instead.&quot;);
+      }
+    }
+<span class="fc" id="L145">  }</span>
+
+  @Override
+  public void setPawnOwner(Player newOwner, int row, int col) {
+<span class="fc" id="L149">    validatePosition(row, col);</span>
+
+<span class="fc" id="L151">    Cell cell = cells[row][col];</span>
+
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">    if (!cell.hasPawns()) {</span>
+<span class="nc" id="L154">      throw new IllegalArgumentException(&quot;Cell has no pawns to convert&quot;);</span>
+    }
+<span class="fc" id="L156">    cell.changeOwner(newOwner);</span>
+<span class="fc" id="L157">  }</span>
+
+  /**
+   * Returns a string representation of the board for debugging.
+   *
+   * @return string representation
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L166">    StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">    for (int row = 0; row &lt; rows; row++) {</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">      for (int col = 0; col &lt; cols; col++) {</span>
+<span class="fc" id="L169">        Cell cell = cells[row][col];</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        if (cell.isEmpty()) {</span>
+<span class="fc" id="L171">          sb.append(&quot;_&quot;);</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        } else if (cell.hasCard()) {</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">          sb.append(cell.getOwner() == Player.RED ? &quot;R&quot; : &quot;B&quot;);</span>
+        } else {
+<span class="fc" id="L175">          sb.append(cell.getPawnCount());</span>
+        }
+<span class="fc" id="L177">        sb.append(&quot; &quot;);</span>
+      }
+<span class="fc" id="L179">      sb.append(&quot;\n&quot;);</span>
+    }
+<span class="fc" id="L181">    return sb.toString();</span>
+  }
+}
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BasicSanguine.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine.model</a> &gt; <span class="el_source">BasicSanguine.java</span></div><h1>BasicSanguine.java</h1><pre class="source lang-java linenums">package sanguine.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Basic implementation of the Sanguine card game model.
+ * Manages game state, enforces rules, and handles player turns.
+ */
+public class BasicSanguine implements SanguineModel {
+  private Board board;
+  private Deck redDeck;
+  private Deck blueDeck;
+  private PlayerHand redHand;
+  private PlayerHand blueHand;
+  private Player currentPlayer;
+  private boolean gameStarted;
+  private boolean redPassed;
+  private boolean bluePassed;
+
+  private final List&lt;ModelStatusListener&gt; modelListeners;
+  private boolean gameStartedNotified;
+
+  //INVARIANT: The board dimensions are valid (rows &gt; 0, cols &gt; 1, cols is odd)
+  //INVARIANT: If gameStarted is true, board, decks, and hands are non-null
+  //INVARIANT: currentPlayer alternates between RED and BLUE after each turn
+
+  /**
+   * Constructs a new BasicSanguine game.
+   * Game must be started with startGame before playing.
+   */
+<span class="fc" id="L32">  public BasicSanguine() {</span>
+<span class="fc" id="L33">    this.gameStarted = false;</span>
+<span class="fc" id="L34">    this.redPassed = false;</span>
+<span class="fc" id="L35">    this.bluePassed = false;</span>
+<span class="fc" id="L36">    this.modelListeners = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L37">    this.gameStartedNotified = false;</span>
+<span class="fc" id="L38">  }</span>
+
+  @Override
+  public void startGame(List&lt;Card&gt; redDeck, List&lt;Card&gt; blueDeck,
+                        int rows, int cols, int handSize) {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    if (gameStarted) {</span>
+<span class="fc" id="L44">      throw new IllegalStateException(&quot;Game has already been started&quot;);</span>
+    }
+<span class="pc bpc" id="L46" title="1 of 4 branches missed.">    if (redDeck == null || blueDeck == null) {</span>
+<span class="fc" id="L47">      throw new IllegalArgumentException(&quot;Decks cannot be null&quot;);</span>
+    }
+<span class="pc bpc" id="L49" title="1 of 4 branches missed.">    if (handSize &gt; redDeck.size() / 3 || handSize &gt; blueDeck.size() / 3) {</span>
+<span class="fc" id="L50">      throw new IllegalArgumentException(&quot;Hand size cannot exceed deck size / 3&quot;);</span>
+    }
+
+    // create board
+<span class="fc" id="L54">    this.board = new BoardImpl(rows, cols);</span>
+
+    // Create decks
+<span class="fc" id="L57">    this.redDeck = new Deck(Player.RED, new ArrayList&lt;&gt;(redDeck));</span>
+<span class="fc" id="L58">    this.blueDeck = new Deck(Player.BLUE, new ArrayList&lt;&gt;(blueDeck));</span>
+
+    // create hands and deal initial cards
+<span class="fc" id="L61">    this.redHand = new PlayerHand(Player.RED);</span>
+<span class="fc" id="L62">    this.blueHand = new PlayerHand(Player.BLUE);</span>
+
+<span class="fc" id="L64">    dealInitialHands(handSize);</span>
+
+    // red always goes first
+<span class="fc" id="L67">    this.currentPlayer = Player.RED;</span>
+<span class="fc" id="L68">    this.gameStarted = true;</span>
+<span class="fc" id="L69">  }</span>
+
+  @Override
+  public void startGame() {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">    if (!gameStarted) {</span>
+<span class="nc" id="L74">      throw new IllegalStateException(&quot;Call startGame(decks...) first&quot;);</span>
+    }
+<span class="nc bnc" id="L76" title="All 2 branches missed.">    if (!gameStartedNotified) {</span>
+<span class="nc" id="L77">      notifyPlayerTurn(currentPlayer);</span>
+<span class="nc" id="L78">      gameStartedNotified = true;</span>
+    }
+<span class="nc" id="L80">  }</span>
+
+  @Override
+  public void addModelStatusListener(ModelStatusListener listener) {
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">    if (listener == null) {</span>
+<span class="nc" id="L85">      throw new IllegalArgumentException(&quot;Listener cannot be null&quot;);</span>
+    }
+<span class="fc" id="L87">    this.modelListeners.add(listener);</span>
+<span class="fc" id="L88">  }</span>
+
+  /**
+   * Notifies all listeners that it's a specific player's turn.
+   */
+  private void notifyPlayerTurn(Player player) {
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">    for (ModelStatusListener listener : modelListeners) {</span>
+<span class="nc" id="L95">      listener.onPlayerTurn(player);</span>
+<span class="nc" id="L96">    }</span>
+<span class="fc" id="L97">  }</span>
+
+  /**
+   * Notifies all listeners that the game is over.
+   */
+  private void notifyGameOver() {
+<span class="fc" id="L103">    Player winner = getWinner();</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">    for (ModelStatusListener listener : modelListeners) {</span>
+<span class="nc" id="L105">      listener.onGameOver(winner);</span>
+<span class="nc" id="L106">    }</span>
+<span class="fc" id="L107">  }</span>
+
+  /**
+   * Deals the initial cards to both players' hands.
+   *
+   * @param handSize number of cards to deal to each player
+   */
+  private void dealInitialHands(int handSize) {
+<span class="fc bfc" id="L115" title="All 2 branches covered.">    for (int i = 0; i &lt; handSize; i++) {</span>
+<span class="fc" id="L116">      Card redCard = redDeck.drawCard();</span>
+<span class="fc" id="L117">      Card blueCard = blueDeck.drawCard();</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">      if (redCard != null) {</span>
+<span class="fc" id="L119">        redHand.addCard(redCard);</span>
+      }
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">      if (blueCard != null) {</span>
+<span class="fc" id="L122">        blueHand.addCard(blueCard);</span>
+      }
+    }
+<span class="fc" id="L125">  }</span>
+
+  @Override
+  public void placeCard(int handIndex, int row, int col) {
+<span class="fc" id="L129">    ensureGameStarted();</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">    if (isGameOver()) {</span>
+<span class="nc" id="L131">      throw new IllegalStateException(&quot;Game is over&quot;);</span>
+    }
+
+<span class="fc" id="L134">    PlayerHand currentHand = getCurrentHand();</span>
+
+<span class="pc bpc" id="L136" title="1 of 4 branches missed.">    if (handIndex &lt; 0 || handIndex &gt;= currentHand.size()) {</span>
+<span class="fc" id="L137">      throw new IllegalArgumentException(&quot;Invalid hand index&quot;);</span>
+    }
+
+<span class="fc" id="L140">    Card card = currentHand.getCard(handIndex);</span>
+<span class="fc" id="L141">    Cell cell = board.getCell(row, col);</span>
+
+    // Check if move is legal
+<span class="fc bfc" id="L144" title="All 2 branches covered.">    if (!isLegalMove(cell, card)) {</span>
+<span class="fc" id="L145">      throw new IllegalStateException(&quot;Cannot place card at this position&quot;);</span>
+    }
+
+    // Remove card from hand and place on board
+<span class="fc" id="L149">    currentHand.removeCard(handIndex);</span>
+<span class="fc" id="L150">    board.placeCard(card, currentPlayer, row, col);</span>
+
+    // Apply card influence
+<span class="fc" id="L153">    applyInfluence(card, row, col);</span>
+
+    // Reset pass tracking - a card was played
+<span class="fc" id="L156">    redPassed = false;</span>
+<span class="fc" id="L157">    bluePassed = false;</span>
+
+    // End turn
+<span class="fc" id="L160">    endTurn();</span>
+<span class="fc" id="L161">  }</span>
+
+  /**
+   * Checks if placing a card at a cell is legal.
+   *
+   * @param cell the cell to place on
+   * @param card the card to place
+   * @return true if legal, false otherwise
+   */
+  private boolean isLegalMove(Cell cell, Card card) {
+<span class="fc bfc" id="L171" title="All 2 branches covered.">    return cell.hasPawns()</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">            &amp;&amp; cell.getOwner() == currentPlayer</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            &amp;&amp; cell.getPawnCount() &gt;= card.getCost();</span>
+  }
+
+  /**
+   * Applies the influence of a placed card to the board.
+   *
+   * @param card    the card that was placed
+   * @param cardRow the row where the card was placed
+   * @param cardCol the column where the card was placed
+   */
+  private void applyInfluence(Card card, int cardRow, int cardCol) {
+<span class="fc" id="L184">    boolean[][] influenceGrid = getInfluenceForPlayer(card);</span>
+
+    // Grid center is at (2, 2), card is at (cardRow, cardCol)
+<span class="fc bfc" id="L187" title="All 2 branches covered.">    for (int gridRow = 0; gridRow &lt; 5; gridRow++) {</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">      for (int gridCol = 0; gridCol &lt; 5; gridCol++) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        if (influenceGrid[gridRow][gridCol]) {</span>
+          // Calculate board position relative to card
+<span class="fc" id="L191">          int boardRow = cardRow + (gridRow - 2);</span>
+<span class="fc" id="L192">          int boardCol = cardCol + (gridCol - 2);</span>
+
+<span class="fc" id="L194">          applyInfluenceToCell(boardRow, boardCol);</span>
+        }
+      }
+    }
+<span class="fc" id="L198">  }</span>
+
+  /**
+   * Gets the influence grid for the current player.
+   * Blue player's influence is mirrored.
+   *
+   * @param card the card
+   * @return the influence grid
+   */
+  private boolean[][] getInfluenceForPlayer(Card card) {
+<span class="fc bfc" id="L208" title="All 2 branches covered.">    if (currentPlayer == Player.BLUE) {</span>
+<span class="fc" id="L209">      return card.getMirroredInfluenceGrid();</span>
+    }
+<span class="fc" id="L211">    return card.getInfluenceGrid();</span>
+  }
+
+  /**
+   * Applies influence to a single cell on the board.
+   *
+   * @param row the row of the cell
+   * @param col the column of the cell
+   */
+  private void applyInfluenceToCell(int row, int col) {
+    // Check if position is on the board
+<span class="pc bpc" id="L222" title="1 of 8 branches missed.">    if (row &lt; 0 || row &gt;= board.getRows() || col &lt; 0 || col &gt;= board.getCols()) {</span>
+<span class="fc" id="L223">      return;</span>
+    }
+
+<span class="fc" id="L226">    Cell cell = board.getCell(row, col);</span>
+
+<span class="fc bfc" id="L228" title="All 2 branches covered.">    if (cell.hasCard()) {</span>
+      // Cards are not affected by influence
+<span class="fc" id="L230">      return;</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">    } else if (cell.isEmpty()) {</span>
+      // Empty cell gains a pawn
+<span class="fc" id="L233">      board.addPawn(currentPlayer, row, col);</span>
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">    } else if (cell.hasPawns()) {</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">      if (cell.getOwner() == currentPlayer) {</span>
+        // Same owner, add pawn (up to max 3)
+<span class="fc" id="L237">        board.addPawn(currentPlayer, row, col);</span>
+      } else {
+        // Different owner, convert ownership
+<span class="fc" id="L240">        board.setPawnOwner(currentPlayer, row, col);</span>
+      }
+    }
+<span class="fc" id="L243">  }</span>
+
+  @Override
+  public void passTurn() {
+<span class="fc" id="L247">    ensureGameStarted();</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">    if (isGameOver()) {</span>
+<span class="nc" id="L249">      throw new IllegalStateException(&quot;Game is already over&quot;);</span>
+    }
+
+    // Track which player passed
+<span class="fc bfc" id="L253" title="All 2 branches covered.">    if (currentPlayer == Player.RED) {</span>
+<span class="fc" id="L254">      redPassed = true;</span>
+    } else {
+<span class="fc" id="L256">      bluePassed = true;</span>
+    }
+
+<span class="fc" id="L259">    endTurn();</span>
+
+    // Check if game just ended
+<span class="fc bfc" id="L262" title="All 2 branches covered.">    if (isGameOver()) {</span>
+<span class="fc" id="L263">      notifyGameOver();</span>
+    }
+<span class="fc" id="L265">  }</span>
+
+  /**
+   * Ends the current turn and switches to the other player.
+   * Also draws a card for the new current player if available.
+   */
+  private void endTurn() {
+<span class="fc" id="L272">    currentPlayer = currentPlayer.switchColor();</span>
+
+    // Draw a card for the new current player
+<span class="fc" id="L275">    Card drawnCard = getCurrentDeck().drawCard();</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">    if (drawnCard != null) {</span>
+<span class="fc" id="L277">      getCurrentHand().addCard(drawnCard);</span>
+    }
+
+    // Notify listeners of turn change
+<span class="fc" id="L281">    notifyPlayerTurn(currentPlayer);</span>
+<span class="fc" id="L282">  }</span>
+
+  @Override
+  public Player getCurrentPlayer() {
+<span class="fc" id="L286">    ensureGameStarted();</span>
+<span class="fc" id="L287">    return this.currentPlayer;</span>
+  }
+
+  @Override
+  public boolean isGameOver() {
+<span class="fc" id="L292">    ensureGameStarted();</span>
+<span class="fc bfc" id="L293" title="All 4 branches covered.">    return redPassed &amp;&amp; bluePassed;</span>
+  }
+
+  @Override
+  public Player getWinner() {
+<span class="fc bfc" id="L298" title="All 2 branches covered.">    if (!isGameOver()) {</span>
+<span class="fc" id="L299">      throw new IllegalStateException(&quot;Game is not over&quot;);</span>
+    }
+
+<span class="fc" id="L302">    int redScore = getScore(Player.RED);</span>
+<span class="fc" id="L303">    int blueScore = getScore(Player.BLUE);</span>
+
+<span class="fc bfc" id="L305" title="All 2 branches covered.">    if (redScore &gt; blueScore) {</span>
+<span class="fc" id="L306">      return Player.RED;</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">    } else if (blueScore &gt; redScore) {</span>
+<span class="fc" id="L308">      return Player.BLUE;</span>
+    }
+<span class="fc" id="L310">    return null; // tie between red and blue</span>
+  }
+
+  @Override
+  public int getScore(Player player) {
+<span class="fc" id="L315">    ensureGameStarted();</span>
+<span class="pc bpc" id="L316" title="1 of 2 branches missed.">    if (player == null) {</span>
+<span class="nc" id="L317">      throw new IllegalArgumentException(&quot;Player cannot be null&quot;);</span>
+    }
+
+<span class="fc" id="L320">    int totalScore = 0;</span>
+
+<span class="fc bfc" id="L322" title="All 2 branches covered.">    for (int row = 0; row &lt; board.getRows(); row++) {</span>
+<span class="fc" id="L323">      int rowScore = getRowScore(row, player);</span>
+<span class="fc" id="L324">      int opponentRowScore = getRowScore(row, player.switchColor());</span>
+
+      // only add score if this player wins the row
+<span class="fc bfc" id="L327" title="All 2 branches covered.">      if (rowScore &gt; opponentRowScore) {</span>
+<span class="fc" id="L328">        totalScore += rowScore;</span>
+      }
+    }
+
+<span class="fc" id="L332">    return totalScore;</span>
+  }
+
+  /**
+   * Calculates the row score for a player in a specific row.
+   * Specifies paramters and then executes.
+   *
+   * @param row the row to calculate (specified)
+   * @param player the player whose turn it is
+   * @return the row score
+   */
+  @Override
+  public int getRowScore(int row, Player player) {
+<span class="fc" id="L345">    ensureGameStarted();</span>
+<span class="pc bpc" id="L346" title="1 of 2 branches missed.">    if (player == null) {</span>
+<span class="nc" id="L347">      throw new IllegalArgumentException(&quot;Player cannot be null&quot;);</span>
+    }
+<span class="pc bpc" id="L349" title="2 of 4 branches missed.">    if (row &lt; 0 || row &gt;= board.getRows()) {</span>
+<span class="nc" id="L350">      throw new IllegalArgumentException(&quot;Row index out of bounds&quot;);</span>
+    }
+
+<span class="fc" id="L353">    List&lt;Card&gt; cards = board.getCardsInRow(row, player);</span>
+<span class="fc" id="L354">    int score = 0;</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">    for (Card card : cards) {</span>
+<span class="fc" id="L356">      score += card.getValue();</span>
+<span class="fc" id="L357">    }</span>
+<span class="fc" id="L358">    return score;</span>
+  }
+
+  @Override
+  public Board getBoard() {
+<span class="fc" id="L363">    ensureGameStarted();</span>
+<span class="fc" id="L364">    return this.board;</span>
+  }
+
+  @Override
+  public List&lt;Card&gt; getHand(Player player) {
+<span class="fc" id="L369">    ensureGameStarted();</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">    if (player == null) {</span>
+<span class="fc" id="L371">      throw new IllegalArgumentException(&quot;Player cannot be null&quot;);</span>
+    }
+
+<span class="fc bfc" id="L374" title="All 2 branches covered.">    if (player == Player.RED) {</span>
+<span class="fc" id="L375">      return redHand.getCards();</span>
+    } else {
+<span class="fc" id="L377">      return blueHand.getCards();</span>
+    }
+  }
+
+  @Override
+  public int getDeckSize(Player player) {
+<span class="fc" id="L383">    ensureGameStarted();</span>
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">    if (player == null) {</span>
+<span class="nc" id="L385">      throw new IllegalArgumentException(&quot;Player cannot be null&quot;);</span>
+    }
+
+<span class="fc bfc" id="L388" title="All 2 branches covered.">    return player == Player.RED ? redDeck.size() : blueDeck.size();</span>
+  }
+
+  @Override
+  public boolean moveCard(int handIndex, int row, int col) {
+<span class="fc" id="L393">    ensureGameStarted();</span>
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">    if (isGameOver()) {</span>
+<span class="nc" id="L395">      throw new IllegalStateException(&quot;Game is over&quot;);</span>
+    }
+
+<span class="fc" id="L398">    PlayerHand currentHand = getCurrentHand();</span>
+
+<span class="pc bpc" id="L400" title="2 of 4 branches missed.">    if (handIndex &lt; 0 || handIndex &gt;= currentHand.size()) {</span>
+<span class="nc" id="L401">      throw new IllegalArgumentException(&quot;Invalid hand index&quot;);</span>
+    }
+
+    try {
+<span class="fc" id="L405">      Card card = currentHand.getCard(handIndex);</span>
+<span class="fc" id="L406">      Cell cell = board.getCell(row, col);</span>
+<span class="fc" id="L407">      return isLegalMove(cell, card);</span>
+<span class="nc" id="L408">    } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L409">      return false;</span>
+    }
+  }
+
+  /**
+   * Gets the hand for the current player.
+   *
+   * @return the current player's hand
+   */
+  private PlayerHand getCurrentHand() {
+<span class="fc bfc" id="L419" title="All 2 branches covered.">    return currentPlayer == Player.RED ? redHand : blueHand;</span>
+  }
+
+  /**
+   * Gets the deck for the current player.
+   *
+   * @return the current player's deck
+   */
+  private Deck getCurrentDeck() {
+<span class="fc bfc" id="L428" title="All 2 branches covered.">    return currentPlayer == Player.RED ? redDeck : blueDeck;</span>
+  }
+
+  /**
+   * Ensures the game has been started.
+   *
+   * @throws IllegalStateException if game hasn't started
+   */
+  private void ensureGameStarted() {
+<span class="fc bfc" id="L437" title="All 2 branches covered.">    if (!gameStarted) {</span>
+<span class="fc" id="L438">      throw new IllegalStateException(&quot;Game has not been started&quot;);</span>
+    }
+<span class="fc" id="L440">  }</span>
+
+  @Override
+  public Cell getCell(int row, int col) {
+<span class="nc" id="L444">    ensureGameStarted();</span>
+<span class="nc" id="L445">    return board.getCell(row, col);</span>
+  }
+
+  @Override
+  public int getRows() {
+<span class="fc" id="L450">    ensureGameStarted();</span>
+<span class="fc" id="L451">    return board.getRows();</span>
+  }
+
+  @Override
+  public int getCols() {
+<span class="fc" id="L456">    ensureGameStarted();</span>
+<span class="fc" id="L457">    return board.getCols();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

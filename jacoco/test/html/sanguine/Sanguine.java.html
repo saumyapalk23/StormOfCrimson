@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Sanguine.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine</a> &gt; <span class="el_source">Sanguine.java</span></div><h1>Sanguine.java</h1><pre class="source lang-java linenums">package sanguine;
+
+import java.io.File;
+import java.util.List;
+import sanguine.controller.DeckConfiguration;
+import sanguine.model.BasicSanguine;
+import sanguine.model.Card;
+import sanguine.model.SanguineModel;
+import sanguine.view.SanguineTextualView;
+
+/**
+ * Main class for demonstrating the Sanguine game.
+ * Reads a deck configuration file and plays through a game automatically.
+ */
+<span class="nc" id="L15">public class Sanguine {</span>
+
+  /**
+   * Main method to run a Sanguine game demo.
+   *
+   * @param args command line arguments, expects deck config file path at args[0]
+   */
+  public static void main(String[] args) {
+    // Check for arguments
+<span class="nc bnc" id="L24" title="All 2 branches missed.">    if (args.length &lt; 1) {</span>
+<span class="nc" id="L25">      System.out.println(&quot;Usage: java sanguine.Sanguine &lt;deck-config-file&gt;&quot;);</span>
+<span class="nc" id="L26">      System.out.println(&quot;Please provide a deck configuration file path.&quot;);</span>
+<span class="nc" id="L27">      return;</span>
+    }
+
+<span class="nc" id="L30">    String filepath = args[0];</span>
+<span class="nc" id="L31">    File configFile = new File(filepath);</span>
+
+    // check if file exists
+<span class="nc bnc" id="L34" title="All 2 branches missed.">    if (!configFile.exists()) {</span>
+<span class="nc" id="L35">      System.out.println(&quot;Error: File '&quot; + filepath + &quot;' does not exist.&quot;);</span>
+<span class="nc" id="L36">      System.out.println(&quot;Please provide a valid deck configuration file.&quot;);</span>
+<span class="nc" id="L37">      return;</span>
+    }
+
+    try {
+      // read deck from file
+<span class="nc" id="L42">      List&lt;Card&gt; deck = DeckConfiguration.readDeckFile(filepath);</span>
+
+      // check if deck has enough cards for 3x5 board (15 cells minimum)
+<span class="nc bnc" id="L45" title="All 2 branches missed.">      if (deck.size() &lt; 15) {</span>
+<span class="nc" id="L46">        System.out.println(&quot;Error: Deck must contain at least 15 cards for a 3x5 board.&quot;);</span>
+<span class="nc" id="L47">        System.out.println(&quot;This deck only has &quot; + deck.size() + &quot; cards.&quot;);</span>
+<span class="nc" id="L48">        return;</span>
+      }
+
+      // initialize model and start game
+<span class="nc" id="L52">      SanguineModel model = new BasicSanguine();</span>
+<span class="nc" id="L53">      model.startGame(deck, deck, 3, 5, 5);</span>
+
+      // Create view
+<span class="nc" id="L56">      SanguineTextualView view = new SanguineTextualView(model);</span>
+
+<span class="nc" id="L58">      System.out.println(&quot;Starting Sanguine Game&quot;);</span>
+<span class="nc" id="L59">      System.out.println(&quot;Board: 3 rows x 5 columns&quot;);</span>
+<span class="nc" id="L60">      System.out.println(&quot;Hand size: 5 cards each\n&quot;);</span>
+
+<span class="nc" id="L62">      System.out.println(&quot;Initial State:&quot;);</span>
+<span class="nc" id="L63">      System.out.println(view.toString());</span>
+<span class="nc" id="L64">      System.out.println(&quot;\n&quot;);</span>
+
+      // play game automatically
+<span class="nc" id="L67">      playGame(model, view);</span>
+
+      // display final results
+<span class="nc" id="L70">      System.out.println(&quot;\n FINAL RESULTS&quot;);</span>
+<span class="nc" id="L71">      System.out.println(view.toString());</span>
+
+<span class="nc" id="L73">    } catch (Exception e) {</span>
+<span class="nc" id="L74">      System.out.println(&quot;Error: &quot; + e.getMessage());</span>
+<span class="nc" id="L75">      e.printStackTrace();</span>
+<span class="nc" id="L76">    }</span>
+<span class="nc" id="L77">  }</span>
+
+  /**
+   * Plays the game automatically until no more cards can be placed.
+   * Both players try to place cards; if unable, they pass.
+   *
+   * @param model the game model
+   * @param view  the view to render game state
+   */
+  private static void playGame(SanguineModel model, SanguineTextualView view) {
+<span class="nc bnc" id="L87" title="All 2 branches missed.">    while (!model.isGameOver()) {</span>
+<span class="nc" id="L88">      sanguine.model.Player currentPlayer = model.getCurrentPlayer();</span>
+<span class="nc" id="L89">      boolean cardPlaced = tryToPlaceCard(model);</span>
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">      if (cardPlaced) {</span>
+<span class="nc" id="L92">        System.out.println(currentPlayer + &quot; placed a card.\n&quot;);</span>
+      } else {
+<span class="nc" id="L94">        model.passTurn();</span>
+<span class="nc" id="L95">        System.out.println(currentPlayer + &quot; passed.\n&quot;);</span>
+      }
+
+      // print board after each action
+<span class="nc" id="L99">      System.out.println(view.toString());</span>
+<span class="nc" id="L100">      System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L101">    }</span>
+<span class="nc" id="L102">  }</span>
+
+  /**
+   * Attempts to place a card from the current player's hand.
+   * Tries each card in hand at each board position.
+   *
+   * @param model the game model
+   * @return true if a card was placed, false if no legal moves
+   */
+  private static boolean tryToPlaceCard(SanguineModel model) {
+<span class="nc" id="L112">    List&lt;Card&gt; hand = model.getHand(model.getCurrentPlayer());</span>
+<span class="nc" id="L113">    int rows = model.getBoard().getRows();</span>
+<span class="nc" id="L114">    int cols = model.getBoard().getCols();</span>
+
+    // try each card in hand
+<span class="nc bnc" id="L117" title="All 2 branches missed.">    for (int handIndex = 0; handIndex &lt; hand.size(); handIndex++) {</span>
+      // try each position on board
+<span class="nc bnc" id="L119" title="All 2 branches missed.">      for (int row = 0; row &lt; rows; row++) {</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        for (int col = 0; col &lt; cols; col++) {</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">          if (model.moveCard(handIndex, row, col)) {</span>
+<span class="nc" id="L122">            model.placeCard(handIndex, row, col);</span>
+<span class="nc" id="L123">            return true;</span>
+          }
+        }
+      }
+    }
+
+<span class="nc" id="L129">    return false; // no legal moves werr found</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

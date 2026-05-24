@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximizeRowScoreStrategy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">f25-hw07-groups-group-AksharaSaumya</a> &gt; <a href="index.source.html" class="el_package">sanguine.strategy</a> &gt; <span class="el_source">MaximizeRowScoreStrategy.java</span></div><h1>MaximizeRowScoreStrategy.java</h1><pre class="source lang-java linenums">package sanguine.strategy;
+
+import java.util.List;
+import sanguine.model.Card;
+import sanguine.model.Player;
+import sanguine.model.ReadOnlySanguineModel;
+
+/**
+ * Strategy that tries to win rows from top to bottom.
+ * For each row where current player's score &lt;= opponent's score,
+ * finds the first move that would make current player's score &gt; opponent's score.
+ */
+<span class="fc" id="L13">public class MaximizeRowScoreStrategy implements Strategy {</span>
+
+  @Override
+  public int[] moveChoice(ReadOnlySanguineModel model, Player player) {
+<span class="fc" id="L17">    Player opponent = player.switchColor();</span>
+<span class="fc" id="L18">    List&lt;Card&gt; hand = model.getHand(player);</span>
+
+    // Visit rows from top to bottom
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">    for (int row = 0; row &lt; model.getRows(); row++) {</span>
+<span class="fc" id="L22">      int ourScore = model.getRowScore(row, player);</span>
+<span class="fc" id="L23">      int theirScore = model.getRowScore(row, opponent);</span>
+
+      // Only consider rows where loss or tied
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">      if (ourScore &lt;= theirScore) {</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        for (int handIndex = 0; handIndex &lt; hand.size(); handIndex++) {</span>
+<span class="fc" id="L28">          Card card = hand.get(handIndex);</span>
+
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">          for (int col = 0; col &lt; model.getCols(); col++) {</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">            if (model.moveCard(handIndex, row, col)) {</span>
+              // Calculate what our new score would be
+<span class="fc" id="L33">              int newScore = ourScore + card.getValue();</span>
+
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">              if (newScore &gt; theirScore) {</span>
+<span class="fc" id="L36">                return new int[]{handIndex, row, col};</span>
+              }
+            }
+          }
+        }
+      }
+    }
+
+<span class="nc" id="L44">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
