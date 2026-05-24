@@ -1,0 +1,7 @@
+Strategy Transcript
+===================
+
+CHECKING MOVE: Card 0 (Value 1) at (0, 0). Legal? true
+
+===================
+Chosen move: card 0 at (0, 0)

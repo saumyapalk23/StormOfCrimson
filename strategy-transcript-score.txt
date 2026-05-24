@@ -1,0 +1,9 @@
+Strategy Transcript
+===================
+
+EVALUATING SCORE: Row 0 for RED. Score: 0
+EVALUATING SCORE: Row 0 for BLUE. Score: 0
+CHECKING MOVE: Card 0 (Value 1) at (0, 0). Legal? true
+
+===================
+Chosen move: card 0 at (0, 0)
